@@ -11,13 +11,20 @@ let package = Package(
         .executable(name: "HandyTab", targets: ["HandyTab"])
     ],
     targets: [
-        .executableTarget(
-            name: "HandyTab",
-            path: "Sources",
+        .target(
+            name: "CMultitouch",
             linkerSettings: [
                 .unsafeFlags(["-F/System/Library/PrivateFrameworks"]),
                 .linkedFramework("MultitouchSupport"),
             ]
-        )
+        ),
+        .target(name: "TrackpadSupport", dependencies: ["CMultitouch"]),
+        .executableTarget(
+            name: "HandyTab",
+            dependencies: ["TrackpadSupport"],
+            path: "Sources",
+            exclude: ["CMultitouch", "TrackpadSupport"]
+        ),
+        .testTarget(name: "TrackpadSupportTests", dependencies: ["TrackpadSupport", "CMultitouch"]),
     ]
 )
